@@ -2,10 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>joint plot</title>
+    <title>CIS 568 Exercise</title>
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <script src="scatter_plot.js?2"></script>
     <script src="bar_plot.js?2"></script>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
     <link rel="stylesheet" href="style.css">
     <style>
@@ -16,91 +21,96 @@
             border: 1px solid #d2bcbc;
             border-collapse: collapse;
         }
+        .svgDivs{
+            height: 100%; 
+            border: 1px black solid;  
+            background-color: rgb(225, 225, 225);
+            margin-bottom: 10px;
+        }
     </style>
-
-
-
+    
 </head>
 <body>
+    <!-- html for plot layouts using bootstrap added 11/3/2020 -->
+    <!-- chnages to one plot per row for narrow screen -->
+    <div class='row'><h4 class='mx-auto' >Penguin Plots - CIS 568 Class Exercise</h4></div>
+    <div class='row' style='height: 400px;'>
+        <div class='col-lg-4 offset-lg-0 col-md-10 offset-md-1 svgDivs'>
+            <div id='svg_left'></div>
+        </div>
+        <div class='col-lg-4 offset-lg-0 col-md-10 offset-md-1 svgDivs' style='height: 100%; border: 1px black solid;  background-color: rgb(225, 225, 225)'>
+            <div id='svg_mid'></div>
+        </div>
+        <div class='col-lg-4 offset-lg-0 col-md-10 offset-md-1 svgDivs' style='height: 100%; border: 1px black solid;'>
+            <div id='svg_right'></div>
+        </div>
+    </div>
 
-<!-- https://seaborn.pydata.org/generated/seaborn.jointplot.html -->
-<!--palmer_penguin_species: https://raw.githubusercontent.com/datavizpyr/data/master/palmer_penguin_species.tsv -->
-<table width="60vw" border=".01px" >
-    <tr>
-        <td><svg width="500px" height="150px"  id="top"></svg></td>
-        <td width="10%">&nbsp</td>
-    </tr>
-    <tr>
-        <td><svg width="500px" height="500px" viewBox="0 0 1000 1000" id="main"></svg></td>
-        <td><svg width="150px" height="500px" id="right"></svg></td>
-    </tr>
-</table>
+    <script>
+        let palmer_penguin_species = "../data/palmer_penguin_species.tsv";
+        // loading data
+        d3.tsv(palmer_penguin_species).then(main)
 
-<script>
-    let palmer_penguin_species = "../data/palmer_penguin_species.tsv";
-    // loading data
-    d3.tsv(palmer_penguin_species).then(main)
+        // Subplots
+        let fig_main = d3.select("#main")
+            .append("g")
+            .append('rect')
+            .attr("class","fig")
+            .attr("width","100%")
+            .attr("height","100%")
+        // top svg
+        let fig_top = d3.select("#top")
+            .append("g")
+            .append('rect')
+            .attr("class","fig")
+            .attr("width","100%")
+            .attr("height","100%")
+        // right svg
+        let fig_right = d3.select("#right")
+            .append("g")
+            .append('rect')
+            .attr("class","fig")
+            .attr("width","100%")
+            .attr("height","100%")
 
-    // Subplots
-    let fig_main = d3.select("#main")
-        .append("g")
-        .append('rect')
-        .attr("class","fig")
-        .attr("width","100%")
-        .attr("height","100%")
-    // top svg
-    let fig_top = d3.select("#top")
-        .append("g")
-        .append('rect')
-        .attr("class","fig")
-        .attr("width","100%")
-        .attr("height","100%")
-    // right svg
-    let fig_right = d3.select("#right")
-        .append("g")
-        .append('rect')
-        .attr("class","fig")
-        .attr("width","100%")
-        .attr("height","100%")
+        function main(data){
+            // fetch data from table
+            let culmen_length_mm = d3.map(data,function (d){
+                return +d.culmen_length_mm})
+            let culmen_depth_mm = d3.map(data,function (d){
+                return +d.culmen_depth_mm})
+            let flipper_length_mm = d3.map(data,function (d){
+                return +d.flipper_length_mm})
+            let species = d3.map(data,function (d){
+                return d.species})
+            let species_types = new Set(species)
 
-    function main(data){
-        // fetch data from table
-        let culmen_length_mm = d3.map(data,function (d){
-            return +d.culmen_length_mm})
-        let culmen_depth_mm = d3.map(data,function (d){
-            return +d.culmen_depth_mm})
-        let flipper_length_mm = d3.map(data,function (d){
-            return +d.flipper_length_mm})
-        let species = d3.map(data,function (d){
-            return d.species})
-        let species_types = new Set(species)
+            let species_code = d3.map(data,function (d) {
+                species = d.species
+                if (species === "Adelie") {
+                    return 0
+                } else if (species === "Gentoo") {
+                    return 1
+                } else {
+                    return 2
+                }
+            })
 
-        let species_code = d3.map(data,function (d) {
-            species = d.species
-            if (species === "Adelie") {
-                return 0
-            } else if (species === "Gentoo") {
-                return 1
-            } else {
-                return 2
-            }
-        })
+            // main svg
+            scatter_plot(culmen_depth_mm,
+                culmen_length_mm,
+                10,
+                species_code,
+                'main'
+                ,title='Penguin Species',
+                xLabel="culmen_depth_mm",
+                yLabel="culmen_length_mm");
+            //#############
+            bar_plot(culmen_depth_mm, 20,'top')
+            h_bar_plot(culmen_length_mm,20,'right')
 
-        // main svg
-        scatter_plot(culmen_depth_mm,
-            culmen_length_mm,
-            10,
-            species_code,
-            'main'
-            ,title='Penguin Species',
-            xLabel="culmen_depth_mm",
-            yLabel="culmen_length_mm");
-        //#############
-        bar_plot(culmen_depth_mm, 20,'top')
-        h_bar_plot(culmen_length_mm,20,'right')
-
-    }
-</script>
+        }
+    </script>
 
 </body>
 </html>

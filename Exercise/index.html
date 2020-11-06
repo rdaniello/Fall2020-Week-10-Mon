@@ -5,7 +5,6 @@
     <title>CIS 568 Exercise</title>
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <script src="scatter_plot.js?2"></script>
-    <script src="bar_plot.js?2"></script>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -47,7 +46,7 @@
     </div>
 
     <script>
-        let palmer_penguin_species = "../data/palmer_penguin_species.tsv";
+        let palmer_penguin_species = "./palmer_penguin_species.tsv";
         // loading data
         d3.tsv(palmer_penguin_species).then(main)
 

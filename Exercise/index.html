@@ -24,7 +24,7 @@
         .svgDivs{
             height: 100%; 
             border: 1px black solid;  
-            background-color: rgb(225, 225, 225);
+            background-color: #faf8f8;
             margin-bottom: 10px;
         }
     </style>
@@ -36,13 +36,13 @@
     <div class='row'><h4 class='mx-auto' >Penguin Plots - CIS 568 Class Exercise</h4></div>
     <div class='row' style='height: 400px;'>
         <div class='col-lg-4 offset-lg-0 col-md-10 offset-md-1 svgDivs'>
-            <div id='svg_left'></div>
+            <svg id='svg_left' height="100%" width="100%" viewBox="0 0 1000 1000"></svg>
         </div>
-        <div class='col-lg-4 offset-lg-0 col-md-10 offset-md-1 svgDivs' style='height: 100%; border: 1px black solid;  background-color: rgb(225, 225, 225)'>
-            <div id='svg_mid'></div>
+        <div class='col-lg-4 offset-lg-0 col-md-10 offset-md-1 svgDivs' style='height: 100%; border: 1px black solid;''>
+            <svg id='svg_mid' height="100%" width="100%" viewBox="0 0 1000 1000"></svg>
         </div>
         <div class='col-lg-4 offset-lg-0 col-md-10 offset-md-1 svgDivs' style='height: 100%; border: 1px black solid;'>
-            <div id='svg_right'></div>
+            <svg id='svg_right' height="100%" width="100%" viewBox="0 0 1000 1000"></svg>
         </div>
     </div>
 
@@ -52,21 +52,21 @@
         d3.tsv(palmer_penguin_species).then(main)
 
         // Subplots
-        let fig_main = d3.select("#main")
+        let fig_main = d3.select("#svg_left")
             .append("g")
             .append('rect')
             .attr("class","fig")
             .attr("width","100%")
             .attr("height","100%")
         // top svg
-        let fig_top = d3.select("#top")
+        let fig_top = d3.select("#svg_mid")
             .append("g")
             .append('rect')
             .attr("class","fig")
             .attr("width","100%")
             .attr("height","100%")
         // right svg
-        let fig_right = d3.select("#right")
+        let fig_right = d3.select("#svg_right")
             .append("g")
             .append('rect')
             .attr("class","fig")
@@ -75,39 +75,96 @@
 
         function main(data){
             // fetch data from table
-            let culmen_length_mm = d3.map(data,function (d){
-                return +d.culmen_length_mm})
-            let culmen_depth_mm = d3.map(data,function (d){
-                return +d.culmen_depth_mm})
-            let flipper_length_mm = d3.map(data,function (d){
-                return +d.flipper_length_mm})
             let species = d3.map(data,function (d){
                 return d.species})
-            let species_types = new Set(species)
 
-            let species_code = d3.map(data,function (d) {
-                species = d.species
-                if (species === "Adelie") {
-                    return 0
-                } else if (species === "Gentoo") {
-                    return 1
+            // code island values
+            data.forEach( function(element){
+                if (element.island === "Torgersen") {
+                    element.island = 0
+                } else if (element.island === "Biscoe") {
+                    element.island = 1
                 } else {
-                    return 2
+                    element.island = 2
                 }
             })
 
-            // main svg
-            scatter_plot(culmen_depth_mm,
-                culmen_length_mm,
-                10,
-                species_code,
-                'main'
-                ,title='Penguin Species',
-                xLabel="culmen_depth_mm",
-                yLabel="culmen_length_mm");
-            //#############
-            bar_plot(culmen_depth_mm, 20,'top')
-            h_bar_plot(culmen_length_mm,20,'right')
+            // filter the species into 3 datasets
+            let sp1 = d3.filter(data, function(d){
+                if(d.species == 'Adelie'){
+                    return d;
+                }
+            })
+            let sp2 = d3.filter(data, function(d){
+                if(d.species == 'Gentoo'){
+                    return d;
+                }
+            })
+            let sp3 = d3.filter(data, function(d){
+                if(d.species == 'Chinstrap'){
+                    return d;
+                }
+            })
+
+            // build the data sets
+            let culmen_length_mm_sp1 = d3.map(sp1,function (d){
+                return +d.culmen_length_mm})
+            let culmen_depth_mm_sp1 = d3.map(sp1,function (d){
+                return +d.culmen_depth_mm})
+            let flipper_length_mm_sp1 = d3.map(sp1,function (d){
+                return +d.flipper_length_mm})
+            let island_sp1 = d3.map(sp1,function (d){
+                return d.island})
+            
+
+            let culmen_length_mm_sp2 = d3.map(sp2,function (d){
+                return +d.culmen_length_mm})
+            let culmen_depth_mm_sp2 = d3.map(sp2,function (d){
+                return +d.culmen_depth_mm})
+            let flipper_length_mm_sp2 = d3.map(sp2,function (d){
+                return +d.flipper_length_mm})
+            let island_sp2 = d3.map(sp2,function (d){
+                return d.island})
+
+            let culmen_length_mm_sp3 = d3.map(sp3,function (d){
+                return +d.culmen_length_mm})
+            let culmen_depth_mm_sp3 = d3.map(sp3,function (d){
+                return +d.culmen_depth_mm})
+            let flipper_length_mm_sp3 = d3.map(sp3,function (d){
+                return +d.flipper_length_mm})
+            let island_sp3 = d3.map(sp3,function (d){
+                return d.island})
+
+
+            // left svg - Adelie
+            scatter_plot(culmen_length_mm_sp1,
+                culmen_depth_mm_sp1,
+                flipper_length_mm_sp1,
+                island_sp1,
+                'svg_left'
+                ,title='Adelie',
+                xLabel="culmen_length_mm",
+                yLabel="culmen_depth_mm");
+            
+            // middle svg - Gentoo
+            scatter_plot(culmen_length_mm_sp2,
+                culmen_depth_mm_sp2,
+                flipper_length_mm_sp2,
+                island_sp2,
+                'svg_mid'
+                ,title='Gentoo',
+                xLabel="culmen_length_mm",
+                yLabel="culmen_depth_mm");
+
+            // right svg - Chinstrap
+            scatter_plot(culmen_length_mm_sp3,
+                culmen_depth_mm_sp3,
+                flipper_length_mm_sp3,
+                island_sp3,
+                'svg_right'
+                ,title='Chinstrap',
+                xLabel="culmen_length_mm",
+                yLabel="culmen_depth_mm");
 
         }
     </script>

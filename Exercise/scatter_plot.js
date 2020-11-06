@@ -8,7 +8,8 @@ function scatter_plot(X,Y,markersize,
 {
     let xScale= d3.scaleLinear().domain(d3.extent(X)).range([0+margin,1000-margin])
     let yScale= d3.scaleLinear().domain(d3.extent(Y)).range([1000-margin,0 + margin])
-    let colorScale= d3.scaleLinear().domain(d3.extent(ColorData)).range(['steelblue','brown'])
+    let rScale= d3.scaleLinear().domain(d3.extent(markersize)).range([1,20])
+    let colorScale= d3.schemeCategory10;
     let axis = d3.select(`#${axis_key}`)
 
     axis.selectAll('.markers')
@@ -17,8 +18,10 @@ function scatter_plot(X,Y,markersize,
         .append('g')
         .attr('transform', function(d,i) {
             return `translate(${xScale(X[i])}, ${yScale(Y[i])})`})
-        .append('circle').attr("r",markersize)
-        .style("fill",function (d,i){return colorScale(ColorData[i])})
+        .append('circle').attr("r", function(d,i) {
+            return rScale(markersize[i])})
+        .style("fill",function (d,i){return colorScale[ColorData[i]]});
+
     // x and y Axis function
     let x_axis = d3.axisBottom(xScale).ticks(4)
     let y_axis = d3.axisLeft(yScale).ticks(4)
